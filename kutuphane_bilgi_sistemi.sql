@@ -87,6 +87,7 @@ DROP TABLE copy_ogrenci_table;
 
 ----------------------------------------------------
 --2 
+--SQLITE COZÜMÜ
 CREATE TABLE copy_ogrenci_table AS
 SELECT
     *
@@ -165,6 +166,15 @@ FROM
     copy_islem_table;
 
 DROP TABLE copy_islem_table;
+
+--MYSQL COZUMU 
+ALTER TABLE
+    ogrenci
+MODIFY
+    dtarih DATETIME;
+
+ALTER TABLE
+    `ogrenci` CHANGE COLUMN `dtarih` `dtarih` DATETIME NOT NULL;
 
 -------------------------------------------------
 -- 3
@@ -297,7 +307,16 @@ FROM
 WHERE
     cinsiyet = "K";
 
---------------------------------------------------------
+-- MySQL çözümü
+CREATE TABLE kiz_ogrenciler as (
+    kiz_ogrenciler
+    select
+        *
+    from
+        ogrenci
+    where
+        cinsiyet = "K"
+) --------------------------------------------------------
 --6
 DROP TABLE kiz_ogrenciler;
 
@@ -309,6 +328,38 @@ INSERT INTO
     kiz_yurdu (ad)
 VALUES
     ("Ayşe");
+
+CREATE TABLE kiz_yurdu (
+    ID int PRIMARY KEY AUTO_INCREMENT,
+    ad TEXT NOT NULL
+);
+
+INSERT INTO
+    kiz_yurdu(ad)
+VALUES
+    ("Ayşe");
+
+INSERT INTO
+    kiz_yurdu(ad)
+VALUES
+    ("Papatya");
+
+CREATE TABLE kiz_yurdu_ogrenciler as (
+    select
+        "1" AS yurtID,
+        ID AS ogrenciID
+    from
+        ogrenci
+    where
+        cinsiyet = "K"
+);
+
+Select
+    *
+from
+    ogrenci
+    inner join kiz_yurdu_ogrenciler on ogrenci.ID = kiz_yurdu_ogrenciler.ogrenciID
+    inner join kiz_yurdu on kiz_yurdu.ID = kiz_yurdu_ogrenciler.yurtID;
 
 -------------------------------------------------
 -- 8
@@ -380,31 +431,34 @@ FROM
 DROP TABLE yazar_copy_table;
 
 --------------------------------------------
-
 -- 10
-
-CREATE TABLE copy_yazar_table AS SELECT *
-                                          FROM yazar;
+CREATE TABLE copy_yazar_table AS
+SELECT
+    *
+FROM
+    yazar;
 
 DROP TABLE yazar;
 
 CREATE TABLE yazar (
-    ID         INTEGER PRIMARY KEY AUTOINCREMENT,
-    name       TEXT    NOT NULL,
-    soyad      TEXT    NOT NULL,
-    ulke               NOT NULL
-                       DEFAULT Türkiye,
-    universite         NOT NULL
+    ID INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    soyad TEXT NOT NULL,
+    ulke NOT NULL DEFAULT Türkiye,
+    universite NOT NULL
 );
 
-INSERT INTO yazar (
-                      ID,
-                      name,
-                      soyad
-                  )
-                  SELECT ID,
-                         name,
-                         soyad
-                    FROM copy_yazar_table;
+INSERT INTO
+    yazar (
+        ID,
+        name,
+        soyad
+    )
+SELECT
+    ID,
+    name,
+    soyad
+FROM
+    copy_yazar_table;
 
 DROP TABLE copy_yazar_table;
